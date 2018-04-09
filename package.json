@@ -1,8 +1,8 @@
 {
-  "name": "boilerplate-react-app",
+  "name": "space",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Andrew Mead",
+  "author": "Sarthak Gupta",
   "license": "MIT",
   "scripts": {
     "build:dev": "webpack",
