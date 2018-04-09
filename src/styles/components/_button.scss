@@ -10,6 +10,17 @@
   text-decoration: none;
 }
 
+.login-button {
+  @extend .button;
+  background: $github-color;
+}
+
+.button--join {
+  @extend .button;
+  background: #2ecc71;
+  margin-left: $s-size;
+}
+
 .button--link {
   background: none;
 }

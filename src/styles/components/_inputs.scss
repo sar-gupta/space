@@ -6,6 +6,11 @@
   padding: $s-size;
 }
 
+.text-input--join {
+  @extend .text-input;
+  margin-bottom: $m-size;
+}
+
 .select {
   @extend .text-input;
 }

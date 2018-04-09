@@ -1,0 +1,52 @@
+#message-form {
+  position: fixed;
+  display: flex;
+  width: 100%;
+  bottom: 0;
+  input {
+    position: relative;
+    // flex-grow: 0.5;
+    flex: 1;
+    flex-flow: row;
+  }
+  button {
+    // flex: 1;
+    flex-grow: 1;
+    text-align: left;
+  }
+}
+
+.messages-box {
+  position: relative;
+  height: 100%;
+  color: white;
+  overflow-y: auto;
+  word-wrap: break-word;
+  padding-right: $l-size;
+  height: 80vh;
+  width: 100%;
+  ul {
+    list-style-type: none;
+  }
+}
+
+.message {
+  border-bottom: 1px solid fade-out(white, .8);
+  line-height: 1rem;
+}
+
+.message__name {
+  font-weight: 700;
+  color: #4CAF50;
+  font-size: $font-size-large;
+}
+
+.message__time {
+  font-style: italic;
+  font-size: $font-size-small;
+  color: $off-white;
+}
+
+.message__text {
+  font-size: $font-size-large;
+}
