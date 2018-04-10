@@ -1,8 +1,17 @@
 .header {
   background: $github-color;
+  // position: absolute;
+  // display: block;
+  // width: 100%;
+  // top: 0;
+  // z-index: 1;
 }
 
 .header__content {
+  // top: 50vh;
+  // position: absolute;
+  // bottom: 0;
+  // padding-top: $l-size;
   align-items: center;
   display: flex;
   justify-content: space-between;

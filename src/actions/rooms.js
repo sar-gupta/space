@@ -168,7 +168,7 @@ export const startListening = () => {
         const message = msgSnapshot.val();
         dispatch(sendMessage({
           ...message,
-          id: snapshot.key
+          id: msgSnapshot.key
         }, roomName));
       });
     });
@@ -199,7 +199,7 @@ export const setStartState = () => {
                     peopleArray.push(people[peopleKey]);
                   }
                   for (var messagesKey in messages) {
-                    messagesArray.push(messages[messagesKey]);
+                    messagesArray.push({...messages[messagesKey], id: messagesKey});
                   }
                   dispatch(createRoom({
                     id: rooms[key],

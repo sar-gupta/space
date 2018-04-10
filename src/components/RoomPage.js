@@ -28,10 +28,9 @@ export class RoomPage extends React.Component {
   render() {
     return (
       <div className="box-layout--messages">
-      <Messages roomName={this.roomName} />
-            
+        <Messages roomName={this.roomName} />
         <form onSubmit={this.onSubmit} autoComplete="off" id="message-form">
-          <input type="text" name="message" className="text-input" placeholder="Send message" />
+          <input type="text" name="message" className="text-input" placeholder="Send message" autoFocus />
           <button className="login-button">Send</button>
         </form>
       </div>
@@ -43,4 +42,8 @@ const mapDispatchToProps = (dispatch) => ({
   startSendMessage: (message, roomName) => dispatch(startSendMessage(message, roomName))
 });
 
-export default connect(undefined, mapDispatchToProps)(RoomPage);
+const mapStateToProps = (state) => ({
+  state
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RoomPage);

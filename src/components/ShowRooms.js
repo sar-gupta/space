@@ -9,7 +9,7 @@ const ShowRooms = (props) => (
   <div className="container__left__text">
     {
       props.rooms.map((room) => {
-        return <div className="room-name-wrapper"><Link  to={`/room/${room.name}`}><div className='room-name'>{room.name}</div></Link></div>;
+        return <div key={room.id} className="room-name-wrapper"><Link  to={`/room/${room.name}`}><div className='room-name'>{room.name}</div></Link></div>;
       })
     }
     </div>

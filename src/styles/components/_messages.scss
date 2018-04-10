@@ -17,13 +17,17 @@
 }
 
 .messages-box {
-  position: relative;
-  height: 100%;
+  position: fixed;
+  float:right;
+  // width: 100%;
+  max-width: 80vw;
+  right: 0;
   color: white;
   overflow-y: auto;
   word-wrap: break-word;
   padding-right: $l-size;
-  height: 80vh;
+  height: 100%;
+  max-height: 80vh;
   width: 100%;
   ul {
     list-style-type: none;
@@ -49,4 +53,5 @@
 
 .message__text {
   font-size: $font-size-large;
+  line-height: 1.6rem;
 }
