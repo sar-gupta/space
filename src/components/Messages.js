@@ -7,7 +7,6 @@ class Messages extends React.Component {
 
 
   scrollToBottom = (options) => {
-    console.log(options);
     this.messagesEnd.scrollIntoView(options);
   }
   

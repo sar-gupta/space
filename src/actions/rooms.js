@@ -100,7 +100,6 @@ export const startJoinRoom = (data = {}, showJoinError) => {
               database.ref('users').once('value').then((usersnapshot) => {
                 usersnapshot.forEach((childSnapshot) => {
                   if (childSnapshot.val().uid === data.id) {
-                    console.log(snapshot);
                     database.ref(`users/${childSnapshot.key}/rooms`).push(rooms[i].id);
                   }
                 })
