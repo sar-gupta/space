@@ -5,20 +5,46 @@ import { startCreateRoom, startJoinRoom } from '../actions/rooms';
 
 
 export class JoinRoomPage extends React.Component {
+
+  state = { 
+    error: '',
+    joinError: ''
+   };
+
   onCreateRoom = (e) => {
     e.preventDefault();
     const user = firebase.auth().currentUser;
+    const value = e.target.rname.value.trim();
+    
     if(user) {
-      const room = {
-        name: e.target.rname.value,
-        people: {
-          id: user.uid,
-          name: user.displayName
+      if(value) {
+        this.setState({error: ''});
+        const room = {
+          name: value,
+          people: {
+            id: user.uid,
+            name: user.displayName
+          }
         }
+        this.props.startCreateRoom(room, this.showCreateError);
+      } else {
+        this.setState({error: 'Please enter a valid room name!'});
       }
-      this.props.startCreateRoom(room);
+      
     }
     
+  }
+
+  showCreateError = (error) => {
+    this.setState({
+      error 
+    });
+  }
+
+  showJoinError = (joinError) => {
+    this.setState({
+      joinError 
+    });
   }
 
   onJoinRoom = (e) => {
@@ -29,7 +55,7 @@ export class JoinRoomPage extends React.Component {
       id: user.uid,
       name: user.displayName
     }
-    this.props.startJoinRoom(data);
+    this.props.startJoinRoom(data, this.showJoinError);
   }
 
   render() {
@@ -37,16 +63,18 @@ export class JoinRoomPage extends React.Component {
       <div className="box-layout--join">
         <div className="box-layout__box--join">
           <h1 className="box-layout__title">Create a room</h1>
-          <form onSubmit={this.onCreateRoom}>
+          <form onSubmit={this.onCreateRoom} autoComplete="off">
           <input className="text-input--join" placeholder="Enter Room name" name="rname" />
           <button className="button--join">Create</button>
+          {this.state.error && <p className="message__time" style={{color: "black"}}>{this.state.error}</p>}
           </form>
         </div>
         <div className="box-layout__box--join">
           <h1 className="box-layout__title">Join a room</h1>
-          <form onSubmit={this.onJoinRoom}>
+          <form onSubmit={this.onJoinRoom} autoComplete="off">
           <input className="text-input--join" placeholder="Enter Room name" name="rname" />
           <button className="button--join">Join</button>
+          {this.state.joinError && <p className="message__time" style={{color: "black"}}>{this.state.joinError}</p>}
           </form>
         </div>
       </div>
@@ -55,8 +83,8 @@ export class JoinRoomPage extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  startCreateRoom: (room) => dispatch(startCreateRoom(room)),
-  startJoinRoom: (data) => dispatch(startJoinRoom(data))
+  startCreateRoom: (room, showCreateError) => dispatch(startCreateRoom(room, showCreateError)),
+  startJoinRoom: (data, showJoinError) => dispatch(startJoinRoom(data, showJoinError))
 });
 
 export default connect(undefined, mapDispatchToProps)(JoinRoomPage);

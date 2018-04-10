@@ -17,7 +17,7 @@ export const createRoom = ({ id, name, people, messages = [] }) => ({
 //   roomID
 // })
 
-export const startCreateRoom = (roomper = {}) => {
+export const startCreateRoom = (roomper = {}, showCreateError) => {
   //TODO: Don't allow creation of already created rooms
   return (dispatch, getState) => {
     const room = {
@@ -52,6 +52,8 @@ export const startCreateRoom = (roomper = {}) => {
           });
 
         });
+      } else {
+        return showCreateError('Room name not available!');
       }
     });
   };
@@ -73,7 +75,7 @@ const isAlreadyAdded = (data, id) => {
   return false;
 }
 
-export const startJoinRoom = (data = {}) => {
+export const startJoinRoom = (data = {}, showJoinError) => {
   // data has userName, userId, roomName
   return (dispatch, getState) => {
     const state = getState();
@@ -88,7 +90,7 @@ export const startJoinRoom = (data = {}) => {
       for (var i = 0; i < rooms.length; i++) {
         if (rooms[i].name === data.roomName) {
           if (isAlreadyAdded(rooms[i].people, data.id)) {
-            return console.log('You are already added to this room');
+            return showJoinError('You are already added to this room');
           } else {
             const person = {
               name: data.name,
@@ -115,7 +117,7 @@ export const startJoinRoom = (data = {}) => {
           }
         }
       }
-      console.log('Room not found!');
+      return showJoinError('Room not found!');
     });
   }
 }

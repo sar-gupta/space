@@ -31,7 +31,7 @@ export class RoomPage extends React.Component {
       <Messages roomName={this.roomName} />
             
         <form onSubmit={this.onSubmit} autoComplete="off" id="message-form">
-          <input type="text" name="message" className="text-input" />
+          <input type="text" name="message" className="text-input" placeholder="Send message" />
           <button className="login-button">Send</button>
         </form>
       </div>
