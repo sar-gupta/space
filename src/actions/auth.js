@@ -21,12 +21,15 @@ export const startLogin = () => {
           });
         });
         if(!users.find((u) => u.uid === user.uid)) {
+          const name = user.displayName ? user.displayName : 'Anonymous';
           database.ref('users').push({
-            name: user.displayName,
+            name,
             email: user.email,
             uid: user.uid,
             rooms: [],
             token
+          }).then(() => {
+            user.reload();
           });
         }
       });

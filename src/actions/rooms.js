@@ -244,12 +244,18 @@ export const startLeaveRoom = (roomName) => {
 
       database.ref(`rooms/${roomID}/people`).once('value', (snapshot) => {
         const value = snapshot.val();
+        let length = 0;
         for(var key in value) {
+          length += 1;
           if(value[key].id === userId) {
             personID = key;
           }
         }
-        database.ref(`rooms/${roomID}/people/${personID}`).remove();
+        if(length === 1) {
+          database.ref(`rooms/${roomID}`).remove();
+        } else {
+            database.ref(`rooms/${roomID}/people/${personID}`).remove();
+        }
       });
 
       database.ref(`users`).once('value', (userSnapshot) => {

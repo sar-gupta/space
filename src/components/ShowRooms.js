@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
 const returnRooms = (rooms) => {
-  console.log(rooms);
+  // console.log(rooms);
   const a = rooms.map((room) => {
     // console.log(room.name);
     return <div key={room.id} className="room-name-wrapper"><NavLink  to={`/room/${room.name}`} activeClassName="room-selected"><div className='room-name'>{room.name}</div></NavLink></div>;

@@ -22,12 +22,19 @@ class Messages extends React.Component {
     if (typeof messages === 'string') {
       return <li className="message__time">{messages}</li>;
     }
-    let a = [];
+    let a = [],  prevSender;
     for (var key in messages) {
-      const name = <p className="message__name">{messages[key].sender.displayName}</p>;
+      const name = <p className="message__name">{messages[key].sender.displayName ? messages[key].sender.displayName : 'Anonymous'}</p>;
       const time = <p className="message__time">{moment(messages[key].createdAt).format('h:mm:ss a, MMMM Do YYYY, dddd')}</p>;
       const text = <p className="message__text">{messages[key].text}</p>;
-      a.push(<li key={messages[key].id} className="message">{name}{time}{text}</li>);
+      // console.log(prevSender, messages[key].sender.displayName)
+      if(prevSender === messages[key].sender.uid) {
+        a.push(<li key={messages[key].id} className="message">{time}{text}</li>);
+      }
+      else {
+        prevSender = messages[key].sender.uid;
+        a.push(<li key={messages[key].id} className="message">{name}{time}{text}</li>);
+      }
     }
     // a.push(<li key="" tabIndex="1"></li>);
     return a;
