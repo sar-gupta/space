@@ -36,3 +36,13 @@
   }
 }
 
+.room-selected {
+  div {
+    text-decoration: none;
+    color: #FFC107;
+    font-weight: 300;
+    font-size: $font-size-large;
+    padding: $m-size $l-size;
+  }
+}
+

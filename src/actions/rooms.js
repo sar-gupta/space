@@ -222,3 +222,60 @@ export const setStartState = () => {
 export const clearState = ({
   type: 'CLEAR_STATE'
 })
+
+export const leaveRoom = (roomName, userId) => ({
+  type: 'LEAVE_ROOM',
+  roomName,
+  userId
+});
+
+export const startLeaveRoom = (roomName) => {
+  return (dispatch, getState) => {
+    const user = firebase.auth().currentUser;
+    if(user) {
+      const userId = user.uid;
+      const rooms = getState().rooms;
+      let roomID, personID, roomPath, userPath;
+      rooms.forEach((room) => {
+        if(room.name === roomName) {
+          roomID = room.id;
+        }
+      });
+
+      database.ref(`rooms/${roomID}/people`).once('value', (snapshot) => {
+        const value = snapshot.val();
+        for(var key in value) {
+          if(value[key].id === userId) {
+            personID = key;
+          }
+        }
+        database.ref(`rooms/${roomID}/people/${personID}`).remove();
+      });
+
+      database.ref(`users`).once('value', (userSnapshot) => {
+        const userValue = userSnapshot.val();
+        for(var key in userValue) {
+          if(userValue[key].uid === userId) {
+            userPath = key;
+          }
+        }
+        database.ref(`users/${userPath}/rooms`).once('value', (snapshot) => {
+          const value = snapshot.val();
+          for(var key in value) {
+            if(value[key] === roomID) {
+              roomPath = key;
+            }
+          }
+          database.ref(`users/${userPath}/rooms/${roomPath}`).remove(() => {
+            dispatch(leaveRoom(roomName, userId));
+            history.push('/join');
+          });
+        });
+      });
+      
+      
+
+    }
+
+  };
+};

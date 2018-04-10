@@ -18,19 +18,23 @@
 
 .messages-box {
   position: fixed;
-  float:right;
+  // float:right;
   // width: 100%;
-  max-width: 80vw;
   right: 0;
   color: white;
   overflow-y: auto;
   word-wrap: break-word;
   padding-right: $l-size;
   height: 100%;
-  max-height: 80vh;
+  max-height: 70vh;
   width: 100%;
+  max-width: 80vw;
+  margin-top: 10vh;
+  
+  // margin-left: 10%;  
   ul {
     list-style-type: none;
+    overflow: hidden;
   }
 }
 

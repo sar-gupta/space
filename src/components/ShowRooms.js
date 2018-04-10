@@ -1,16 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-
+const returnRooms = (rooms) => {
+  console.log(rooms);
+  const a = rooms.map((room) => {
+    // console.log(room.name);
+    return <div key={room.id} className="room-name-wrapper"><NavLink  to={`/room/${room.name}`} activeClassName="room-selected"><div className='room-name'>{room.name}</div></NavLink></div>;
+  });
+  return a;
+}
 
 const ShowRooms = (props) => (
   <div className="container__left">
   <div className="container__left__text">
     {
-      props.rooms.map((room) => {
-        return <div key={room.id} className="room-name-wrapper"><Link  to={`/room/${room.name}`}><div className='room-name'>{room.name}</div></Link></div>;
-      })
+      returnRooms(props.rooms)
     }
     </div>
   </div>

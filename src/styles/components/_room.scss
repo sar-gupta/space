@@ -1,0 +1,21 @@
+.room-header {
+  // position: relative;
+  // top: 0;
+  padding: $s-size $l-size;
+  width: 100%;
+  // max-width: 80vh;
+  background: black;
+  display: block;
+  // height: 10vh;
+  max-height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // z-index: 10;
+}
+
+.room-header__title {
+  font-size: $font-size-large;  
+  color: #3498db;
+  font-weight: 700;
+}

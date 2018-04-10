@@ -28,6 +28,10 @@ export default (state=defaultState, action) => {
           return room;
         }
       });
+    case 'LEAVE_ROOM':
+      return state.filter((room) => {
+        return room.name !== action.roomName;
+      });
     case 'CLEAR_STATE':
       return [];
     default:
