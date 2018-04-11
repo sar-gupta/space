@@ -46,6 +46,8 @@ export const startCreateRoom = (roomper = {}, showCreateError) => {
               ...roomper,
               people: [roomper.people]
             }));
+            const perName = roomper.people.name ? roomper.people.name : 'Anonymous';;            
+            dispatch(startSendMessage(`${perName} created this room`, room.name, true));            
             history.push(`/room/${room.name}`);
 
             // dispatch(addRoomToUser(ref.key));
@@ -96,6 +98,21 @@ export const startJoinRoom = (data = {}, showJoinError) => {
               name: data.name,
               id: data.id
             }
+            let people = [];
+            let messages = [];
+            for(var key in rooms[i].people) {
+              people.push({
+                id: rooms[i].people[key].id,
+                name: rooms[i].people[key].name
+              });
+            }
+            // const people = rooms[i].people;
+            for(var key in rooms[i].messages) {
+              messages.push({
+                ...rooms[i].messages[key]
+              });
+            }
+            // const messages = rooms[i].messages;
             return database.ref(`rooms/${rooms[i].id}/people`).push(person).then((ref) => {
               database.ref('users').once('value').then((usersnapshot) => {
                 usersnapshot.forEach((childSnapshot) => {
@@ -104,11 +121,16 @@ export const startJoinRoom = (data = {}, showJoinError) => {
                   }
                 })
               });
+              
               dispatch(createRoom({
-                people: [person],
+                people: [...people, person],
                 id: rooms[i].id,
-                name: rooms[i].name
+                name: rooms[i].name,
+                messages
               }));
+              const perName = person.name ? person.name : 'Anonymous';;
+              
+              dispatch(startSendMessage(`${perName} joined`, data.roomName, true));
               // dispatch(addRoomToUser(ref.key));
 
               history.push(`room/${data.roomName}`);
@@ -127,7 +149,7 @@ export const sendMessage = (message, roomName) => ({
   roomName
 });
 
-export const startSendMessage = (text, roomName) => {
+export const startSendMessage = (text, roomName, status=false) => {
   return (dispatch, getState) => {
     const user = firebase.auth().currentUser;
     if (user) {
@@ -137,6 +159,7 @@ export const startSendMessage = (text, roomName) => {
         sender: { uid, displayName },
         text,
         createdAt: moment().format(),
+        status
       };
       return database.ref('rooms').once('value', (snapshot) => {
         const rooms = [];
@@ -234,6 +257,7 @@ export const startLeaveRoom = (roomName) => {
     const user = firebase.auth().currentUser;
     if(user) {
       const userId = user.uid;
+      const displayName = user.displayName;
       const rooms = getState().rooms;
       let roomID, personID, roomPath, userPath;
       rooms.forEach((room) => {
@@ -274,6 +298,8 @@ export const startLeaveRoom = (roomName) => {
           }
           database.ref(`users/${userPath}/rooms/${roomPath}`).remove(() => {
             dispatch(leaveRoom(roomName, userId));
+            const perName = displayName ? displayName : 'Anonymous';
+            dispatch(startSendMessage(`${perName} left`, roomName, true));                        
             history.push('/join');
           });
         });

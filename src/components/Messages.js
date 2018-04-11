@@ -28,6 +28,12 @@ class Messages extends React.Component {
       const time = <p className="message__time">{moment(messages[key].createdAt).format('h:mm:ss a, MMMM Do YYYY, dddd')}</p>;
       const text = <p className="message__text">{messages[key].text}</p>;
       // console.log(prevSender, messages[key].sender.displayName)
+      if(messages[key].status) {
+        a.push(<li key={messages[key].id} className="message-with-status">{text}{time}</li>);
+        prevSender = null;
+        continue;
+      }
+
       if(prevSender === messages[key].sender.uid) {
         a.push(<li key={messages[key].id} className="message">{time}{text}</li>);
       }

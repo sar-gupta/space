@@ -59,3 +59,15 @@
   font-size: $font-size-large;
   line-height: 1.6rem;
 }
+
+.message-with-status {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: fade-out(white, .8);
+  color: $off-white;
+  font-style: italic;
+  font-size: $font-size-large;
+  padding: $s-size 0;  
+  margin: $s-size 0;
+}

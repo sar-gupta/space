@@ -3,11 +3,15 @@ import Modal from 'react-modal';
 import { connect } from 'react-redux';
 
 const returnUsers = (rooms, roomName) => {
-  if(rooms.length > 0) {
+  if(rooms && rooms.length > 0) {
     const room = rooms.find((r) => {
       return r.name === roomName;
     });
-    return room.people.map((p) => <div key={p.id}>{p.name}</div>);
+    if(room && room.people && room.people.length > 0) {
+      return room.people.map((p) => {
+        return <div key={p.id}>{p.name ? p.name : 'Anonymous'}</div>
+      });
+    }
   }
 }
 
