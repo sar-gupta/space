@@ -21,6 +21,11 @@
   color: #FFC107;
   border: 1px solid darken(#FFC107, 0.5);
   border-radius: 0.3;
+  transition: background .3s linear, color .3s linear;
+  &:hover {
+    background: #FFC107;
+    color: black;
+  }
 }
 
 .button--join {
