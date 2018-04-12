@@ -10,14 +10,17 @@
   background: linear-gradient(to right, $github-color,#2c3e50);
   border-right: 1px solid fade-out(white, .8);;
   padding: 0 0 $l-size $l-size;
-  float: left;
-  
+  float: left;  
   // position: relative;
 }
 
 .container__left__text {
   height: 100%;
+  // display: flex;
+  // flex-direction: column-reverse;
   overflow: auto;
+  // justify-content: flex-start;
+  // align-items: flex-start;
 }
 
 .room-name {

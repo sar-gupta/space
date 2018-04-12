@@ -171,6 +171,7 @@ export const startSendMessage = (text, roomName, status=false) => {
         });
         for (var i = 0; i < rooms.length; i++) {
           if (rooms[i].name === roomName) {
+            // dispatch(orderRoomsStartState(getState().rooms));            
             return database.ref(`rooms/${rooms[i].id}/messages`).push(message);
           }
         }
@@ -180,9 +181,15 @@ export const startSendMessage = (text, roomName, status=false) => {
   };
 };
 
+// export const reorderRooms = (roomName) => ({
+//   type: 'REORDER_ROOMS',
+//   roomName
+// });
+
 
 export const startListening = () => {
   return (dispatch, getState) => {
+    // const state = getState();
     return database.ref('rooms').on('child_added', (snapshot) => {
       // console.log(snapshot.val());
       const roomName = snapshot.val().name;
@@ -192,10 +199,16 @@ export const startListening = () => {
           ...message,
           id: msgSnapshot.key
         }, roomName));
+        // console.log(state.rooms.length);
+          dispatch(orderRoomsStartState());
       });
     });
   };
 };
+
+export const orderRoomsStartState = () => ({
+  type: 'ORDER_ROOMS_START_STATE'
+});
 
 
 export const setStartState = () => {
@@ -207,6 +220,7 @@ export const setStartState = () => {
       if (user) {
         const uid = user.uid;
         let rooms = [];
+        // let roomsState = [];
         database.ref('users').once('value', (snapshot) => {
           snapshot.forEach((childSnapshot) => {
             if (childSnapshot.val().uid === uid) {
@@ -215,7 +229,9 @@ export const setStartState = () => {
               for (var key in rooms) {
                 // console.log(rooms[key]);
                 database.ref(`rooms/${rooms[key]}`).once('value', (snapshot) => {
-                  const { name, people, messages } = snapshot.val();
+                  const room = snapshot.val();
+                  // roomsState.push(room);
+                  const { name, people, messages } = room;
                   let peopleArray = [], messagesArray = [];
                   for (var peopleKey in people) {
                     peopleArray.push(people[peopleKey]);
@@ -223,18 +239,23 @@ export const setStartState = () => {
                   for (var messagesKey in messages) {
                     messagesArray.push({...messages[messagesKey], id: messagesKey});
                   }
+                  // console.log(messagesArray);
                   dispatch(createRoom({
                     id: rooms[key],
                     name,
                     people: peopleArray,
                     messages: messagesArray
-                  }))
+                  }));
+
+                  
                   // console.log(name, peopleArray, messages);
                 });
               }
+              // console.log(roomsState);
             }
+            dispatch(orderRoomsStartState());            
           });
-        });
+        }) //
       }
   
     // }
