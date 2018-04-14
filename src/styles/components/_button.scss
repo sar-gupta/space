@@ -41,3 +41,18 @@
 .button--secondary {
   background: #888;
 }
+
+
+.button--unread-messages {
+  border-radius:50%;
+  height: 40px;
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  background: #B2EBF2;
+  color: #263238;
+  font-weight: 700;
+  border: none;
+}

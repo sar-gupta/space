@@ -23,7 +23,9 @@ export class JoinRoomPage extends React.Component {
           name: value,
           people: {
             id: user.uid,
-            name: user.displayName
+            name: user.displayName,
+            unread: 0,
+            lastRead: 0
           }
         }
         this.props.startCreateRoom(room, this.showCreateError);
@@ -53,7 +55,8 @@ export class JoinRoomPage extends React.Component {
     const data = {
       roomName: e.target.rname.value,
       id: user.uid,
-      name: user.displayName
+      name: user.displayName,
+      unread: 0
     }
     this.props.startJoinRoom(data, this.showJoinError);
   }

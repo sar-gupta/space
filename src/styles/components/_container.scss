@@ -33,6 +33,9 @@
 }
 
 .room-name-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   border-bottom: 1px solid fade-out(white, .8);  
   &:hover {
     background: fade-out(white, 0.8);
