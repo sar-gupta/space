@@ -2,7 +2,11 @@
 
 ![cover](resources/space-readme.jpg)
 
-Chat application for developers. [ Not yet fit for production use ]
+If something isn't working properly, just logout and login again. Since this is in active development as of now, I keep on clearing the database to incorporate changes to the schema.
+
+Some users' names are not shown, instead Anonymous is shown. This is a known bug in firebase; it doesn't have permission to read certain users' display name.
+
+Chat application for developers. ( Not yet fit for production use )
 
 ## Website
 spacedev.herokuapp.com
