@@ -37,11 +37,18 @@ git clone git@github.com:sar-gupta/space.git
 cd space
 ```
 
-Create a new project in firebase. 
+Create a new project in firebase by heading over to console.firebase.google.com 
 
-Head over to the authentication tab, click on `Sign in method` and select Github. Click on `enable`. Now, localhost should be an authorized domain by default, but if it isn't there, just click on `Add domain`and enter `localhost`.
+Head over to the authentication tab, click on `Sign in method` and select Github. Click on `enable`. Copy the authorization calback URL that's provided to you right there.
 
-Then, go to the `database` tab, click on `real-time database` and go to `Rules`.
+After this, you need to register the app with github. Head over to https://github.com/settings/applications/new and fill in details. App homepage can be literally any valid URL, it doesn't matter as long as the URL is valid. Here, in the authorization callback URL, paste the URL that you copied from firebase to your clipboard. Click on `Register Application`.
+
+You'll be redirected to a page that has a client ID and a client secret. Copy those and paste them where they are required in firebase, and click on `Save`. Github authentication should now be enabled.
+
+
+Now, localhost should be an authorized domain by default, but if it isn't there, just click on `Add domain`and enter `localhost`.
+
+Then, go to the `database` tab, click on `real-time database` and select `Start in test mode`. Go to `Rules`, they should look like this:
 
 Set its value to this: 
 ```
@@ -49,7 +56,7 @@ Set its value to this:
   "rules": {
     ".read": true,
     ".write": true
-	}
+  }
 }
 ```
 Now go the `Project Overview` and click on `Add firebase to web app`.
@@ -66,7 +73,7 @@ FIREBASE_PROJECT_ID=
 FIREBASE_STORAGE_BUCKET=
 FIREBASE_MESSAGING_SENDER_ID=
 ```
-Enter the values from the firebase config object here, and save the file.
+Enter the values from the firebase config object here (**without the double quotes**), and save the file.
 
 ### Running the app locally
 
@@ -78,6 +85,8 @@ yarn run dev-server
 
 And you're good to go!
 ---
+
+You can view the database contents in your firebase project's database tab.
 
 
 If you want to contribute to this project, feel free to create an issue and/or submit a pull request.
