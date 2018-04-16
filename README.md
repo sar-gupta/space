@@ -48,9 +48,7 @@ You'll be redirected to a page that has a client ID and a client secret. Copy th
 
 Now, localhost should be an authorized domain by default, but if it isn't there, just click on `Add domain`and enter `localhost`.
 
-Then, go to the `database` tab, click on `real-time database` and select `Start in test mode`. Go to `Rules`, they should look like this:
-
-Set its value to this: 
+Then, go to the `database` tab, click on `real-time database` and select `Start in test mode`. Go to `Rules`, they should look like this: 
 ```
 {
   "rules": {
