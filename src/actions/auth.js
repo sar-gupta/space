@@ -1,8 +1,9 @@
 import database, { firebase, githubAuthProvider as provider } from '../firebase/firebase';
 
-export const login = (uid) => ({
+export const login = (uid, displayName) => ({
   type: 'LOGIN',
-  uid
+  uid,
+  displayName
 });
 
 export const startLogin = () => {
@@ -13,28 +14,14 @@ export const startLogin = () => {
       var token = result.credential.accessToken;
       // The signed-in user info.
       var user = result.user;
-      database.ref('users').once('value', (snapshot) => {
-        const users = [];
-        snapshot.forEach((childSnapshot) => {
-          users.push({
-            ...childSnapshot.val()
-          });
-        });
-        if(!users.find((u) => u.uid === user.uid)) {
-          const name = user.displayName ? user.displayName : 'Anonymous';
-          database.ref('users').push({
-            name,
-            email: user.email,
-            uid: user.uid,
-            rooms: [],
-            token
-          }).then(() => {
-            user.reload();
-          });
-        }
+      const name = user.displayName ? user.displayName : user.email;
+      database.ref(`users/${user.uid}`).set({
+        name,
+        uid: user.uid,
+        email: user.email,
+        rooms: [],
+        token
       });
-      
-      
       // ...
     }).catch(function(error) {
       // Handle Errors here.

@@ -1,5 +1,4 @@
 import React from 'react';
-import { firebase } from '../firebase/firebase';
 import { connect } from 'react-redux';
 import { startCreateRoom, startJoinRoom } from '../actions/rooms';
 
@@ -13,17 +12,17 @@ export class JoinRoomPage extends React.Component {
 
   onCreateRoom = (e) => {
     e.preventDefault();
-    const user = firebase.auth().currentUser;
+    const user = this.props.auth;
     const value = e.target.rname.value.trim();
-    
     if(user) {
+      const name = user.displayName;
       if(value) {
         this.setState({error: ''});
         const room = {
           name: value,
           people: {
             id: user.uid,
-            name: user.displayName,
+            name,
             unread: 0,
             lastRead: 0
           }
@@ -51,7 +50,7 @@ export class JoinRoomPage extends React.Component {
 
   onJoinRoom = (e) => {
     e.preventDefault();
-    const user = firebase.auth().currentUser;
+    const user = this.props.auth;
     const data = {
       roomName: e.target.rname.value,
       id: user.uid,
@@ -90,4 +89,8 @@ const mapDispatchToProps = (dispatch) => ({
   startJoinRoom: (data, showJoinError) => dispatch(startJoinRoom(data, showJoinError))
 });
 
-export default connect(undefined, mapDispatchToProps)(JoinRoomPage);
+const mapStateToProps = (state) => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(JoinRoomPage);

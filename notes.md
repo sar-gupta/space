@@ -1,4 +1,4 @@
-{
+<!-- {
   users [] {
     id
     name
@@ -16,4 +16,8 @@
 
     }
   ]
-}
+} -->
+
+rooms -> people -> uid
+
+users -> uid

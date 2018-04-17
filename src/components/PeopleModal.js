@@ -9,7 +9,7 @@ const returnUsers = (rooms, roomName) => {
     });
     if(room && room.people && room.people.length > 0) {
       return room.people.map((p) => {
-        return <div key={p.id}>{p.name ? p.name : 'Anonymous'}</div>
+        return <div key={p.id}>{p.name}</div>
       });
     }
   }
