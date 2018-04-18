@@ -62,8 +62,8 @@ export class RoomPage extends React.Component {
     if (rooms.length > 0) {
       const a = rooms.find((room) => {
         return room.name === this.roomName;
-        const roomPath = a.id;
-      this.props.startClearUnread(roomPath, this.roomName);
+        // const roomPath = a.id;
+      this.props.startClearUnread(this.roomName);
       });
       
     }
@@ -99,7 +99,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   startSendMessage: (message, roomName) => dispatch(startSendMessage(message, roomName)),
   startLeaveRoom: (roomName) => dispatch(startLeaveRoom(roomName)),
-  startClearUnread: (roomPath, roomName) => dispatch(startClearUnread(roomPath, roomName))
+  startClearUnread: (roomName) => dispatch(startClearUnread(roomName))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RoomPage);

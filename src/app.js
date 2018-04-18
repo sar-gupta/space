@@ -10,7 +10,7 @@ import './styles/styles.scss';
 import 'react-dates/lib/css/_datepicker.css';
 import database, { firebase } from './firebase/firebase';
 import LoadingPage from './components/LoadingPage';
-import { startListening, setStartState, clearState } from './actions/rooms';
+import { setStartState, clearState } from './actions/rooms';
 
 const store = configureStore();
 const jsx = (
@@ -20,7 +20,7 @@ const jsx = (
 );
 let hasRendered = false;
 
-store.dispatch(startListening());
+// store.dispatch(startListening());
 
 const renderApp = () => {
   if (!hasRendered) {

@@ -16,7 +16,7 @@ export const createRoom = ({ id, name, people, messages = [] }) => ({
 export const startCreateRoom = (roomper = {}, showCreateError) => {
   return (dispatch, getState) => {
     const room = {
-      name: roomper.name
+      name: roomper.name,
     }
     return database.ref('rooms').once('value', (snapshot) => {
       const rooms = [];
@@ -26,26 +26,62 @@ export const startCreateRoom = (roomper = {}, showCreateError) => {
         });
       });
       if (!rooms.find((r) => r.name === room.name)) {
-        return database.ref('rooms').push(room).then((ref) => {
-          return database.ref(`rooms/${ref.key}/people/${roomper.people.id}`).set(roomper.people).then(() => {
-            database.ref(`users/${roomper.people.id}/rooms/${ref.key}`).set({roomName: room.name});
+        return database.ref(`rooms/${room.name}`).set(room).then((ref) => {
+          return database.ref(`rooms/${room.name}/people/${roomper.people.id}`).set(roomper.people).then(() => {
+            database.ref(`users/${roomper.people.id}/rooms/${room.name}`).set({ roomName: room.name });
 
             dispatch(createRoom({
-              id: ref.key,
               ...roomper,
               people: [roomper.people]
             }));
             const perName = roomper.people.name;
-            dispatch(startSendMessage(`${perName} created this room`, room.name, true));
-            history.push(`/room/${room.name}`);
+            dispatch(startSendMessage(`${perName} created this room`, room.name, true)).then(() => {
+              dispatch(startListening(room.name));
+              history.push(`/room/${room.name}`);
+            });
           });
         });
       } else {
         return showCreateError('Room name not available!');
       }
+
     });
   };
 };
+
+
+export const startListening = (roomName) => {
+  return (dispatch, getState) => {
+    return database.ref(`rooms/${roomName}/messages`).on('child_added', (msgSnapshot) => {
+      if (getState().rooms.find((r) => r.name === roomName)) {
+        database.ref(`rooms/${roomName}/people`).once('value', (personSnapshot) => {            
+          const message = msgSnapshot.val();
+          dispatch(sendMessage({ ...message, id: msgSnapshot.key }, roomName));
+          dispatch(orderRoomsStartState());
+          const keyword = message.status && message.text.split(' ').splice(-1, 1)[0];
+          if (keyword === "left") {
+            dispatch(onLeft(roomName, message.sender.uid));
+          }
+          else if (keyword === "joined") {
+            dispatch(onJoined(roomName, personSnapshot.val()[message.sender.uid]));
+          }
+          const personID = getState().auth.uid;
+
+          if (personID === message.sender.uid && keyword !== 'left') {
+            database.ref(`rooms/${roomName}/people/${personID}`).update({ unread: 0, lastRead: message.createdAt }).then(() => {
+              dispatch(setUnread(roomName, personID, message.createdAt, 0));
+            });
+          }
+          else if (personID !== message.sender.uid && moment(message.createdAt) > moment(personSnapshot.val()[personID].lastRead)) {
+            database.ref(`rooms/${roomName}/people/${personID}`).update({ unread: personSnapshot.val()[personID].unread + 1, lastRead: message.createdAt }).then(() => {
+              dispatch(setUnread(roomName, personID, message.createdAt, personSnapshot.val()[personID].unread + 1));
+            });
+          }
+        });
+      }
+    });
+  }
+}
 
 const isAlreadyAdded = (data, id) => {
   for (var key in data) {
@@ -57,59 +93,53 @@ const isAlreadyAdded = (data, id) => {
 export const startJoinRoom = (data = {}, showJoinError) => {
   return (dispatch, getState) => {
     const state = getState();
-    return database.ref('rooms').once('value', (snapshot) => {
-      const rooms = [];
-      snapshot.forEach((childSnapshot) => {
-        rooms.push({
-          id: childSnapshot.key,
-          ...childSnapshot.val()
-        });
-      });
-      for (var i = 0; i < rooms.length; i++) {
-        if (rooms[i].name === data.roomName) {
-          if (isAlreadyAdded(rooms[i].people, data.id)) {
-            return showJoinError('You are already added to this room');
-          } else {
-            const person = {
-              name: data.name,
-              id: data.id,
-              unread: data.unread,
-              lastRead: 0
-            };
-            let people = [];
-            let messages = [];
-            for (var key in rooms[i].people) {
-              people.push({
-                id: rooms[i].people[key].id,
-                name: rooms[i].people[key].name,
-                unread: rooms[i].people[key].unread,
-                lastRead: rooms[i].people[key].lastRead
-              });
-            }
-            for (var key in rooms[i].messages) {
-              messages.push({
-                ...rooms[i].messages[key]
-              });
-            }
-            return database.ref(`rooms/${rooms[i].id}/people/${person.id}`).set(person).then((ref) => {
-              database.ref(`users/${person.id}/rooms/${rooms[i].id}`).set({roomName: rooms[i].name});
-
-              dispatch(createRoom({
-                people: [...people, person],
-                id: rooms[i].id,
-                name: rooms[i].name,
-                messages
-              }));
-              const perName = person.name;
-
-              dispatch(startSendMessage(`${perName} joined`, data.roomName, true));
-
-              history.push(`room/${data.roomName}`);
-            });
-          }
-        }
+    return database.ref(`rooms/${data.roomName}`).once('value', (snapshot) => {
+      const value = snapshot.val();
+      const id = data.id;
+      if (value === null) {
+        return showJoinError('Room not found!');
       }
-      return showJoinError('Room not found!');
+      else if (value.people && value.people[id]) {
+        history.push(`room/${data.roomName}`);
+      }
+      else {
+        dispatch(startListening(data.roomName));
+        const person = {
+          name: data.name,
+          id: data.id,
+          unread: data.unread,
+          lastRead: 0
+        };
+        let people = [];
+        let messages = [];
+        for (var key in value.people) {
+          people.push({
+            id: value.people[key].id,
+            name: value.people[key].name,
+            unread: value.people[key].unread,
+            lastRead: value.people[key].lastRead
+          });
+        }
+        for (var key in value.messages) {
+          messages.push({
+            ...value.messages[key]
+          });
+        }
+        return database.ref(`rooms/${data.roomName}/people/${person.id}`).set(person).then((ref) => {
+          database.ref(`users/${person.id}/rooms/${data.roomName}`).set({ roomName: data.roomName });
+
+          dispatch(createRoom({
+            people: [...people, person],
+            name: data.roomName,
+            messages
+          }));
+          const perName = person.name;
+
+          dispatch(startSendMessage(`${perName} joined`, data.roomName, true));
+
+          history.push(`room/${data.roomName}`);
+        });
+      }
     });
   }
 }
@@ -132,97 +162,8 @@ export const startSendMessage = (text, roomName, status = false) => {
         createdAt: moment().format(),
         status
       };
-      return database.ref('rooms').once('value', (snapshot) => {
-        let rooms = [];
-        snapshot.forEach((childSnapshot) => {
-          rooms.push({
-            id: childSnapshot.key,
-            ...childSnapshot.val()
-          });
-        });
-        for (var i = 0; i < rooms.length; i++) {
-          if (rooms[i].name === roomName) {
-            return database.ref(`rooms/${rooms[i].id}/messages`).push(message);
-          }
-        }
-      });
+      return database.ref(`rooms/${roomName}/messages`).push(message);
     }
-
-  };
-};
-
-
-export const startListening = () => {
-  return (dispatch, getState) => {
-    // const state = getState();
-    return database.ref('rooms').on('child_added', (snapshot) => {
-      // console.log(snapshot.val());
-
-      snapshot.ref.child('messages').on('child_added', (msgSnapshot) => {
-        snapshot.ref.child('people').once('value', (personSnapshot) => {
-
-          
-          const roomPath = snapshot.key;
-          const rooms = snapshot.val();
-          
-          const people = personSnapshot.val();
-          const roomName = rooms.name;
-          const message = msgSnapshot.val();
-          const personID = getState().auth.uid;
-          if (personID) {
-            let x;
-            let prevUnread, lastRead;
-            for (var key in people) {
-              if (people[key].id === personID) {
-                prevUnread = people[key].unread;
-                lastRead = people[key].lastRead;
-              }
-              if (people[key].id === message.sender.uid) {
-                x = people[key];
-              }
-            }
-            
-            dispatch(sendMessage({
-              ...message,
-              id: msgSnapshot.key
-            }, roomName));
-
-            dispatch(orderRoomsStartState());
-
-            const keyword = message.status && message.text.split(' ').splice(-1,1)[0];
-
-
-            if(personID !== message.sender.uid) {
-              if(keyword === "left") {
-                // console.log('onleft', message.sender.uid);
-                dispatch(onLeft(roomName, message.sender.uid));
-              }
-  
-              if(keyword === "joined") {
-                // console.log('onjoined');
-                dispatch(onJoined(roomName, x));
-              }
-            }
-
-            const time = moment().format();
-
-
-            if (personID === message.sender.uid && roomName && keyword !== 'left') {
-                database.ref(`rooms/${roomPath}/people/${personID}`).update({ unread: 0, lastRead: message.createdAt }).then(() => {
-                dispatch(setUnread(roomName, personID, message.createdAt, 0));
-              });
-            }
-
-            else if (personID !== message.sender.uid && roomName && moment(message.createdAt) > moment(lastRead)) {
-              database.ref(`rooms/${roomPath}/people/${personID}`).update({ unread: prevUnread + 1, lastRead: message.createdAt }).then(() => {
-
-                dispatch(setUnread(roomName, personID, message.createdAt, prevUnread + 1));
-              });
-            }
-          }
-        });
-      });
-    });
   };
 };
 
@@ -230,17 +171,15 @@ export const orderRoomsStartState = () => ({
   type: 'ORDER_ROOMS_START_STATE'
 });
 
-
 export const setStartState = () => {
   return (dispatch, getState) => {
     const uid = getState().auth.uid;
     if (uid) {
       return database.ref(`users/${uid}`).once('value', (snapshot) => {
-        if(snapshot.val()) {
-        const rooms = snapshot.val().rooms;
-        // console.log(rooms);
-        
-          for(var key in rooms) {
+        if (snapshot.val()) {
+          const rooms = snapshot.val().rooms;
+          for (var key in rooms) {
+            dispatch(startListening(key));
             database.ref(`rooms/${key}`).once('value', (snapshot) => {
               const room = snapshot.val();
               const { name, people, messages } = room;
@@ -252,17 +191,14 @@ export const setStartState = () => {
                 messagesArray.push({ ...messages[messagesKey], id: messagesKey });
               }
               dispatch(createRoom({
-                id: key,
                 name,
                 people: peopleArray,
                 messages: messagesArray
               }));
-              orderRoomsStartState();                    
             });
           }
-          orderRoomsStartState();  
+          dispatch(orderRoomsStartState());
         }
-              
       });
     }
   };
@@ -284,19 +220,10 @@ export const startLeaveRoom = (roomName) => {
     if (user) {
       const userId = user.uid;
       const displayName = user.displayName;
-      const rooms = getState().rooms;
-      let roomID, personID, roomPath, userPath;
-      rooms.forEach((room) => {
-        if (room.name === roomName) {
-          roomID = room.id;
-        }
-      });
-
-      database.ref(`rooms/${roomID}/people/${userId}`).remove();
-      database.ref(`users/${userId}/rooms/${roomID}`).remove(() => {
+      database.ref(`rooms/${roomName}/people/${userId}`).remove();
+      database.ref(`users/${userId}/rooms/${roomName}`).remove(() => {
         dispatch(leaveRoom(roomName, userId));
-        const perName = displayName;
-        dispatch(startSendMessage(`${perName} left`, roomName, true));
+        dispatch(startSendMessage(`${displayName} left`, roomName, true));
         history.push('/join');
       });
     }
@@ -317,14 +244,13 @@ export const setUnread = (roomName, uid, time, unread) => {
   }
 };
 
-
-export const startClearUnread = (roomPath, roomName) => {
+export const startClearUnread = (roomName) => {
   return (dispatch, getState) => {
     let time = moment().endOf('month');
     const uid = getState().auth.uid;
     if (uid) {
-      time = moment().format();      
-      return database.ref(`rooms/${roomPath}/people/${uid}`).update({
+      time = moment().format();
+      return database.ref(`rooms/${roomName}/people/${uid}`).update({
         unread: 0,
         lastRead: time
       }).then(() => {
@@ -340,10 +266,8 @@ export const onLeft = (roomName, personID) => ({
   personID
 });
 
-export const  onJoined = (roomName, person) => ({
+export const onJoined = (roomName, person) => ({
   type: 'ON_JOINED',
   roomName,
   person
 });
-
-

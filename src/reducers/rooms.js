@@ -20,13 +20,13 @@ export default (state=defaultState, action) => {
       });
 
     case 'ON_LEFT': 
-    console.log('onleft');
+    // console.log('onleft');
     
       return state.map((room) => {
-        console.log(room);
+        // console.log(room);
         if(room.name === action.roomName) {
           const p = room.people.filter((pe) => {return pe.id !== action.personID});
-          console.log(p);
+          // console.log(p);
           return {
             ...room,
             people: p
