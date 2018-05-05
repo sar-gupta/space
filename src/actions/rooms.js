@@ -1,6 +1,10 @@
 import database, { firebase } from '../firebase/firebase';
 import { history } from '../routers/AppRouter';
 import moment from 'moment';
+import * as path from 'path';
+// import { ipcRenderer } from 'electron';
+
+
 
 export const createRoom = ({ id, name, people, messages = [] }) => ({
   type: 'CREATE_ROOM',
@@ -58,6 +62,11 @@ export const startListening = (roomName) => {
           const message = msgSnapshot.val();
           dispatch(sendMessage({ ...message, id: msgSnapshot.key }, roomName));
           dispatch(orderRoomsStartState());
+          if(message.sender.displayName!==getState().auth.displayName) {
+            // ipcRenderer.send('playNotif', message.sender.displayName, message.text);
+            const audio = new Audio('/sounds/notif.mp3');
+            audio.play();
+          }
           const keyword = message.status && message.text.split(' ').splice(-1, 1)[0];
           if (keyword === "left") {
             dispatch(onLeft(roomName, message.sender.uid));
@@ -173,12 +182,17 @@ export const orderRoomsStartState = () => ({
 
 export const setStartState = () => {
   return (dispatch, getState) => {
+    // console.log('setting start state');
     const uid = getState().auth.uid;
     if (uid) {
+      // console.log('user found');
       return database.ref(`users/${uid}`).once('value', (snapshot) => {
         if (snapshot.val()) {
+          console.log('snapshot',snapshot.val());
           const rooms = snapshot.val().rooms;
+          console.log(rooms);
           for (var key in rooms) {
+            console.log(key);
             dispatch(startListening(key));
             database.ref(`rooms/${key}`).once('value', (snapshot) => {
               const room = snapshot.val();
@@ -190,6 +204,7 @@ export const setStartState = () => {
               for (var messagesKey in messages) {
                 messagesArray.push({ ...messages[messagesKey], id: messagesKey });
               }
+              console.log('creating room');
               dispatch(createRoom({
                 name,
                 people: peopleArray,
@@ -197,6 +212,7 @@ export const setStartState = () => {
               }));
             });
           }
+          // console.log('hello')
           dispatch(orderRoomsStartState());
         }
       });

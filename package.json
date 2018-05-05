@@ -1,6 +1,7 @@
 {
   "name": "space",
   "version": "1.0.0",
+  "productName": "Space",
   "main": "index.js",
   "author": "Sarthak Gupta",
   "license": "MIT",
@@ -10,7 +11,11 @@
     "dev-server": "webpack-dev-server",
     "test": "cross-env NODE_ENV=test jest --config=jest.config.json",
     "start": "node server/server.js",
-    "heroku-postbuild": "yarn run build:prod"
+    "heroku-postbuild": "yarn run build:prod",
+    "electron": "electron .",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=public/images/favicon3.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=public/images/favicon3.ico --prune=true --out=release-builds",    
+    "package-linux": "electron-packager . --overwrite --asar=true --platform=linux --arch=x64 --icon=public/images/favicon3.png --prune=true --out=release-builds"
   },
   "dependencies": {
     "babel-cli": "6.24.1",
@@ -21,13 +26,15 @@
     "babel-polyfill": "6.26.0",
     "babel-preset-env": "1.5.2",
     "babel-preset-react": "6.24.1",
+    "babel-preset-stage-1": "^6.22.0",
     "css-loader": "0.28.4",
     "express": "4.15.4",
     "extract-text-webpack-plugin": "3.0.0",
     "firebase": "4.2.0",
     "history": "4.7.2",
     "moment": "2.18.1",
-    "node-sass": "4.5.3",
+    "node-notifier": "^5.2.1",
+    "node-sass": "^4.9.0",
     "normalize.css": "7.0.0",
     "numeral": "2.0.6",
     "react": "15.6.1",
@@ -47,6 +54,8 @@
   "devDependencies": {
     "cross-env": "5.0.5",
     "dotenv": "4.0.0",
+    "electron": "~1.6.2",
+    "electron-packager": "^12.0.2",
     "enzyme": "2.9.1",
     "enzyme-to-json": "1.5.1",
     "jest": "20.0.4",

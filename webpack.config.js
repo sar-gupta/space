@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const fs = require('fs');
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -10,17 +11,37 @@ if (process.env.NODE_ENV === 'test') {
   require('dotenv').config({ path: '.env.development' });
 }
 
+// const nodeModules = {};
+// fs.readdirSync('node_modules')
+//   .filter(function(x) {
+//     return ['.bin'].indexOf(x) === -1;
+//   })
+//   .forEach(function(mod) {
+//     nodeModules[mod] = 'commonjs ' + mod;
+//   });
+
 module.exports = (env) => {
   const isProduction = env === 'production';
   const CSSExtract = new ExtractTextPlugin('styles.css');
 
   return {
+    // externals: nodeModules,
     entry: ['babel-polyfill', './src/app.js'],
+    target: 'web',
     output: {
       path: path.join(__dirname, 'public', 'dist'),
       filename: 'bundle.js'
     },
     module: {
+      loaders: [
+      {
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: {
+          presets: ['react', 'es2015', 'stage-1']
+        }
+      },
+    ],
       rules: [{
         loader: 'babel-loader',
         test: /\.js$/,
@@ -32,13 +53,15 @@ module.exports = (env) => {
             {
               loader: 'css-loader',
               options: {
-                sourceMap: true
+                sourceMap: true,
+                url: false
               }
             },
             {
               loader: 'sass-loader',
               options: {
-                sourceMap: true
+                sourceMap: true,
+                url: false
               }
             }
           ]
@@ -56,11 +79,17 @@ module.exports = (env) => {
         'process.env.FIREBASE_MESSAGING_SENDER_ID': JSON.stringify(process.env.FIREBASE_MESSAGING_SENDER_ID)
       })
     ],
+  //   resolve: {
+  //     alias: {
+  //       'assets': resolve('/images/')
+  //     }
+  // },
     devtool: isProduction ? 'source-map' : 'inline-source-map',
     devServer: {
       contentBase: path.join(__dirname, 'public'),
       historyApiFallback: true,
-      publicPath: '/dist/'
+      publicPath: '/dist/',
+      port: 4172
     }
   };
 };

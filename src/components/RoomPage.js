@@ -63,7 +63,7 @@ export class RoomPage extends React.Component {
       const a = rooms.find((room) => {
         return room.name === this.roomName;
         // const roomPath = a.id;
-      this.props.startClearUnread(this.roomName);
+        // this.props.startClearUnread(this.roomName);
       });
       
     }

@@ -5,13 +5,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Space</title>
-  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <!-- <link rel="icon" type="image/png" href="/images/favicon.png" /> -->
   <link rel="stylesheet" type="text/css" href="/dist/styles.css" />
 </head>
 
 <body>
-  <div id="app"></div>
+    <div id="app"></div>
+
+  <!-- <webview id="app" style="height:100%" src="/dist/bundle.js"  webpreferences="nodeIntegration=no, nativeWindowOpen=yes" allowpopups></webview> -->
+  <!-- <webview id="foo" src="https://www.github.com/" style="display:inline-flex; width:640px; height:480px"></webview> -->
+  <!-- <script>
+      var link = document.createElement('link')
+      link.setAttribute('rel', 'stylesheet')
+      link.setAttribute('href', require('path').join(__dirname, 'dist', 'styles.css'))
+      document.head.appendChild(link)
+
+      // var link2 = document.createElement('link')
+      // link.setAttribute('rel', 'icon')
+      // link.setAttribute('href', require('path').join(__dirname, 'dist', 'styles.css'))
+      // document.head.appendChild(link)
+
+
+      var script = document.createElement('script')
+      script.setAttribute('src', require('path').join(__dirname, 'dist', 'bundle.js'))
+      document.body.appendChild(script)
+  </script> -->
   <script src="/dist/bundle.js"></script>
+<!-- HELLO -->
 </body>
 
 </html>
