@@ -88,6 +88,14 @@ FIREBASE_MESSAGING_SENDER_ID=
 Enter the values from the firebase config object here (**without the double quotes**), and save the file.
 
 ### Running locally for development
+To run the electron app, first build locally to create the `public/dist/` folder. If you just want to run it on the web, then this isn't required since webpack dev server can serve from memory without physically creating the `public/dist/` folder.
+```
+yarn run build:dev
+```
+or
+```
+yarn run build:prod
+```
 
 To start the desktop application, run the following commands from the root directory of the project:
 ```
