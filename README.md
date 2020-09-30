@@ -1,4 +1,4 @@
-# S P A C E
+# The space pack
 
 ![cover](resources/space-readme.jpg)
 
