@@ -14,7 +14,7 @@
     "heroku-postbuild": "yarn run build:prod",
     "electron": "electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=public/images/favicon3.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=public/images/favicon3.ico --prune=true --out=release-builds",    
+    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=x64 --icon=public/images/favicon3.ico --prune=true --out=release-builds",
     "package-linux": "electron-packager . --overwrite --asar=true --platform=linux --arch=x64 --icon=public/images/favicon3.png --prune=true --out=release-builds"
   },
   "dependencies": {
