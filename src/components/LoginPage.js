@@ -9,7 +9,7 @@ export const LoginPage = ({ startLogin }) => {
 
   return (<div className="box-layout">
     <div className="box-layout__box">
-      <h1 className="box-layout__title">Space</h1>
+      <h1 className="box-layout__title">AKLIO</h1>
       <p>Say hello to fellow developers</p>
       <input type="text" onChange={(e) => {uname = e.target.value}} />
       <input type="text" onChange={(e) => {passd = e.target.value}} />
