@@ -12,7 +12,7 @@ export const LoginPage = ({ startLogin }) => {
       <h1 className="box-layout__title">AKLIO</h1>
       <p>Say hello to fellow developers</p>
       <input type="text" onChange={(e) => {uname = e.target.value}} />
-      <input type="text" onChange={(e) => {passd = e.target.value}} />
+      <input type="password" onChange={(e) => {passd = e.target.value}} />
       <button className="login-button" onClick={()=>{startLogin(uname, passd)}}>Login</button>
     </div>
   </div>)
